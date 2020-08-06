@@ -1,0 +1,27 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "textedit", "textedit\textedit.vcproj", "{58386098-09A3-44D2-A2DA-611F465F595C}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "organic", "organic\organic.vcproj", "{F680541E-606B-464F-A12B-C32C5C21294B}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{58386098-09A3-44D2-A2DA-611F465F595C}.Debug.ActiveCfg = Debug|Win32
+		{58386098-09A3-44D2-A2DA-611F465F595C}.Debug.Build.0 = Debug|Win32
+		{58386098-09A3-44D2-A2DA-611F465F595C}.Release.ActiveCfg = Release|Win32
+		{58386098-09A3-44D2-A2DA-611F465F595C}.Release.Build.0 = Release|Win32
+		{F680541E-606B-464F-A12B-C32C5C21294B}.Debug.ActiveCfg = Debug|Win32
+		{F680541E-606B-464F-A12B-C32C5C21294B}.Release.ActiveCfg = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
