@@ -17,7 +17,3 @@ void alert(wchar_t* label, wchar_t* message) {
 Bool askyesno(wchar_t* label, wchar_t* message) {
 	return MessageBox(0, message, label, MB_ICONWARNING | MB_YESNO) == IDYES;
 }
-
-Window newwin(wchar_t* label, Window* parent) {
-
-};

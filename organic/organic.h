@@ -79,5 +79,5 @@ WinMessage giveenvelope();
 int winsend(Window w, WinMessage m);
 
 /* Entry point */
-int oinit(HINSTANCE instance, wchar_t* cmdline, int launchview);
+int oinit(HINSTANCE instance, wchar_t* cmdline, int initview);
 
