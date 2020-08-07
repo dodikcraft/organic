@@ -89,6 +89,7 @@ static Window* winrm(size_t k)
 Window newwin(wchar_t* label, Window* parent)
 {
 	Window w;
+	mzero(w);
 	
 	w.hwnd = CreateWindowEx(0, defclass, label, 0, -1, -1, -1, -1,
 		parent->hwnd, NULL, instance, NULL);
@@ -103,6 +104,7 @@ Window newwin(wchar_t* label, Window* parent)
 	w.flags.mdied = 0;
 	w.flags.mdichild = 0;
 
+	return w;
 }
 
 
@@ -123,6 +125,7 @@ LRESULT CALLBACK LiterallyEveryWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 	case WM_DESTROY:
 		w->destroy(w);
 		PostQuitMessage(0);
+		winset(hwnd, Nil);
 		return 0;
 
 	case WM_PAINT:
