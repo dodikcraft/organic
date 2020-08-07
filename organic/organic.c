@@ -21,18 +21,3 @@ Bool askyesno(wchar_t* label, wchar_t* message) {
 Window newwin(wchar_t* label, Window* parent) {
 
 };
-
-WinTmpl givetemplate() {
-	struct orgtemplate tmpl;
-
-	wchar_t* clsname = L"Organic";
-
-	tmpl.nativeclass.cbSize = sizeof cls;
-	tmpl.nativeclass.style = CS_HREDRAW | CS_VREDRAW;
-	tmpl.nativeclass.lpfnWndProc = &WndProc;
-	tmpl.nativeclass.hbrBackground = COLOR_BACKGROUND + 1;
-	tmpl.nativeclass.hInstance = instance;
-	tmpl.nativeclass.lpszClassName = clsname;
-
-	
-};
