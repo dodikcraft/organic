@@ -7,7 +7,7 @@
 
 /* Non-zero value enables bound-checks in window hash-map */
 #ifndef ORGANIC_FOOLPROOF
-#define ORGANIC_FOOLPROOF 1
+#define ORGANIC_FOOLPROOF
 #endif
 
 #ifndef _WINDOWS_
@@ -24,7 +24,7 @@
 
 #define mcero(type, ptr) mtzero(type, ptr)
 
-#define mzap(type, ptr) _dispose_##type##(ptr)
+#define mzap(type, ptr) dispose##type##(ptr)
 
 /* #define mnilof(type) (type*)0 */
 
@@ -61,23 +61,26 @@ typedef struct orgwindow {
 
 void alert(wchar_t* label, wchar_t* message);
 Bool askyesno(wchar_t* label, wchar_t* message);
+unsigned long winstyle(Window* w, unsigned long style)
+unsigned long winexstyle(Window* w, unsigned long style)
+/*
 Bool winshow(Window w);
 Bool winhide(Window w);
 Bool winminimize(Window w);
 Bool winmaximize(Window w);
-
+*/
 
 
 /* BASIC FUNCTIONS */
 
 /* Prototype-based windows */
 Window newwin(wchar_t* label, Window* parent, ...);
-Window winclone(Window w);
+Window winclone(Window* w);
 
 /* Messaging */
 WinMessage giveenvelope();
 int winsend(Window w, WinMessage m);
 
 /* Entry point */
-int oinit(HINSTANCE instance, wchar_t* cmdline, int initview);
+int oinit(HINSTANCE instance, wchar_t* args, int view);
 

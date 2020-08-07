@@ -17,3 +17,5 @@ void alert(wchar_t* label, wchar_t* message) {
 Bool askyesno(wchar_t* label, wchar_t* message) {
 	return MessageBox(0, message, label, MB_ICONWARNING | MB_YESNO) == IDYES;
 }
+
+/* winstyle sets window's style */unsigned long winstyle(Window* w, unsigned long style) {	return SetWindowLong(w->hwnd, GWL_STYLE, style);}/* winexstyle sets window's extended style */unsigned long winexstyle(Window* w, unsigned long style) {	return SetWindowLong(w->hwnd, GWL_EXSTYLE, style);}
