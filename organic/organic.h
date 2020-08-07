@@ -1,5 +1,15 @@
 #define ORGANICH "0.0.1"
 
+/* Size of hwnd->*Window hash-map */
+#ifndef ORGANIC_WINMAPSIZ
+#define ORGANIC_WINMAPSIZ 2048
+#endif
+
+/* Non-zero value enables bound-checks in window hash-map */
+#ifndef ORGANIC_FOOLPROOF
+#define ORGANIC_FOOLPROOF 1
+#endif
+
 #ifndef _WINDOWS_
 #include <windows.h>
 #endif
@@ -18,7 +28,7 @@
 
 /* #define mnilof(type) (type*)0 */
 
-#define Nil (void*)0
+#define Nil NULL
 
 
 
