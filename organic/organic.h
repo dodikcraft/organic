@@ -44,11 +44,16 @@ typedef struct orgmessage {
 
 typedef struct orgwindow {
 	HWND hwnd;
+	HWND mdihwnd;
 	void (*create)(Window* w); 
 	void (*close)(Window* w);
 	void (*destroy)(Window* w);
-	void (*paint)(Window* w, WinDevice dc);
-	int (*unknown)(Window* w, WinMessage msg, int* ret);
+	void (*paint)(Window* w, HDC dc, PAINTSTRUCT ps);
+	Bool (*pass)(Window* w, WinMessage msg, int* ret);
+	struct {
+		unsigned mdied : 1;			/* enables next flag */
+		unsigned mdichild : 1;		/* if 0 -- use DefFrameProc, if 1 -- use DefMDIChildProc */
+	} flags; /* let's hope that msvc 2003 supports nested structs */
 } Window;
 
 
@@ -65,14 +70,8 @@ Bool winmaximize(Window w);
 
 /* BASIC FUNCTIONS */
 
-/* Template-based windows */
-WinTmpl givetemplate();
-int regtemplate();
-Window winmaterialize(WinTmpl* t, wchar_t* label, Window* parent);
-Window winm8ze(WinTmpl* t, wchar_t* label, Window* parent);
-
 /* Prototype-based windows */
-Window newwin(wchar_t* label, Window* parent);
+Window newwin(wchar_t* label, Window* parent, ...);
 Window winclone(Window w);
 
 /* Messaging */
@@ -80,5 +79,5 @@ WinMessage giveenvelope();
 int winsend(Window w, WinMessage m);
 
 /* Entry point */
-int omain(WinArgs args);
+int oinit(HINSTANCE instance, wchar_t* cmdline, int launchview);
 
