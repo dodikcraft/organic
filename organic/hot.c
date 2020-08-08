@@ -107,6 +107,8 @@ Window newwin(wchar_t* label, Window* parent)
 	return w;
 }
 
+/* winclone creates a new window from existing */Window winclone(Window* w){	wchar_t buf[512];	Window v;	memcpy(&v, w, sizeof(Window));	GetWindowText(w->hwnd, buf, 512);	v.hwnd = CreateWindowEx(0, defclass, buf, 0, -1, -1, -1, -1,
+		parent->hwnd, NULL, instance, NULL);	return v;}
 
 /* begin windows-specific shitcode */
 LRESULT CALLBACK LiterallyEveryWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -173,16 +175,8 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE unused, wchar_t* cmdline, int 
 
 	RegisterClassEx(&defclass);
 
-	/*
-	iccx.dwSize = sizeof iccx;
-	iccx.dwICC = 0x0000FFFF;
-
-	InitCommonControlsEx(&iccx);
-	LoadLibrary(L"Msftedit.dll");
-	*/
-
 	/* your code goes here */
-	oinit(instance, cmdline, cmdshow);
+	oinit(instance, cmdline);
 
 	while (GetMessage(&msg, NULL, 0, 0))
 	{

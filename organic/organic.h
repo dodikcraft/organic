@@ -26,6 +26,8 @@
 
 #define mzap(type, ptr) dispose##type##(ptr)
 
+#define mbool(m) ((m == 0) ? 0 : 1) 
+
 /* #define mnilof(type) (type*)0 */
 
 #define Nil NULL
@@ -82,5 +84,5 @@ WinMessage giveenvelope();
 int winsend(Window w, WinMessage m);
 
 /* Entry point */
-int oinit(HINSTANCE instance, wchar_t* args, int view);
+int oinit(HINSTANCE instance, wchar_t* args);
 
