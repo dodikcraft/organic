@@ -6,10 +6,6 @@
 #include "organic.h"
 #endif
 
-#ifndef _WINDOWS_
-#include <windows.h>
-#endif
-
 void odefcreate(Window* w) 
 {
 	return;
@@ -27,7 +23,7 @@ void odefdestroy(Window* w)
 
 void odefpaint(Window* w, HDC dc, PAINTSTRUCT ps)
 {
-	FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_WINDOW+1));
+	FillRect(dc, &ps.rcPaint, (HBRUSH) (COLOR_WINDOW+1));
 }
 
 Bool odefpass(Window* w, WinMessage msg, int* ret)

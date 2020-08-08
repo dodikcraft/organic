@@ -2,6 +2,10 @@
 #include "organic.h"
 #endif
 
+#ifndef ORG_DEFAULTH
+#include "defaults.h"
+#endif
+
 #include <stddef.h>
 #include <stdarg.h>
 
@@ -11,12 +15,25 @@ static WNDCLASSEX defclass;
 static HINSTANCE instance;
 
 
-static (Window*) winmap[ORGANIC_WINMAPSIZ];
+static Window* winmap[ORGANIC_WINMAPSIZ];
 static size_t mapcap; /* remaining capacity of winmap */
 
 static size_t maphash(size_t n) 
 {
 	return n % ORGANIC_WINMAPSIZ;
+}
+
+static Window* winrm(size_t k) 
+{
+	Window* w = winmap[k];
+	winmap[k] = Nil;
+
+	do {
+		k = (k + 1) % ORGANIC_WINMAPSIZ;
+		winmap[k-1] = winmap[k];
+	} while (winmap[k] != Nil);
+
+	return w;
 }
 
 static Window* winset(HWND h, Window* w) 
@@ -70,32 +87,21 @@ static Window* winget(HWND h)
 	return w;
 }
 
-static Window* winrm(size_t k) 
-{
-	Window* w = winmap[k];
-	winmap[k] = Nil;
+/*this map won't^WWILL work in general, but for our purposes it will be enough*/
 
-	do {
-		k = (k + 1) % ORGANIC_WINMAPSIZ;
-		winmap[k-1] = winmap[k];
-	} while (winmap[k] != Nil);
-
-	return w;
-}
-
-/*this hashmap won't work in general, but for our purposes it will be enough*/
-
-/* newwin creates and initializes new window */
-Window newwin(wchar_t* label, Window* parent)
+/* newwin creates and initializes a new window */
+Window newwin(wchar_t* label, Window* parent, void (*oncreate)(Window* w))
 {
 	Window w;
+	HWND paren = Nil;
 	mzero(w);
 	
-	w.hwnd = CreateWindowEx(0, defclass, label, 0, -1, -1, -1, -1,
-		parent->hwnd, NULL, instance, NULL);
-	w.mdihwnd = Nil;
+	if (parent != Nil)
+		paren = parent->hwnd;
 
-	w.create = &odefcreate;
+	LiterallyEveryWndProc(Nil, WM_ORGANIC_NEWWIN, 0, (LPARAM) &w);
+	LiterallyEveryWndProc(Nil, WM_ORGANIC_ONCREATESET, 0, (LPARAM) oncreate);
+	
 	w.close = &odefclose;
 	w.destroy = &odefdestroy;
 	w.paint = &odefpaint;
@@ -103,6 +109,11 @@ Window newwin(wchar_t* label, Window* parent)
 
 	w.flags.mdied = 0;
 	w.flags.mdichild = 0;
+
+	w.mdihwnd = Nil;
+
+	w.hwnd = CreateWindowEx(0, L"Organic", label, 0, -1, -1, -1, -1,
+		paren, NULL, instance, NULL);
 
 	return w;
 }
@@ -114,19 +125,42 @@ Window winclone(Window* w)
 	Window v;
 	memcpy(&v, w, sizeof(Window));
 	GetWindowText(w->hwnd, buf, 512);
-	v.hwnd = CreateWindowEx(0, defclass, buf, 0, -1, -1, -1, -1,
-		parent->hwnd, NULL, instance, NULL);
+	v.hwnd = CreateWindowEx(0, L"Organic", buf, 0, -1, -1, -1, -1,
+		GetParent(w->hwnd), NULL, instance, NULL);
 	return v;
 }
 
 /* begin windows-specific shitcode */
 LRESULT CALLBACK LiterallyEveryWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	Window* w = winget(hwnd);
+	static Bool addnexthwnd;
+	static Window* w;
+	static void (*oncreate)(Window*);
+	
+	if (msg == WM_ORGANIC_NEWWIN) {
+		w = (Window*) lparam;
+		addnexthwnd = 1;
+		return 0;
+	}
+
+	if (msg == WM_ORGANIC_ONCREATESET) {
+		oncreate = (void (*)(Window*)) lparam;
+		return 0;
+	}
+
+	if (w != Nil && addnexthwnd) {
+		w = winset(hwnd, w);
+		w->hwnd = hwnd;
+		addnexthwnd = 0;
+	}
+	else
+		w = winget(hwnd);
+
 	switch (msg)
 	{
 	case WM_CREATE:
-		w->create(w);
+		w = winset(hwnd, w);
+		oncreate(w);
 		return 0;
 
 	case WM_CLOSE: 
@@ -161,7 +195,7 @@ LRESULT CALLBACK LiterallyEveryWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 				return ret;
 			else if (w->flags.mdied) {
 				if (w->flags.mdichild) 
-					return DefMDIChildProc(hwnd, msg, wParam, lParam);
+					return DefMDIChildProc(hwnd, msg, wparam, lparam);
 				else
 					return DefFrameProc(hwnd, w->mdihwnd, msg, wparam, lparam);
 			}

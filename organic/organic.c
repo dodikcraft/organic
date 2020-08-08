@@ -35,30 +35,32 @@ unsigned long winexstyle(Window* w, unsigned long style)
 /* wintoggle sets the window visibility
 
 please note that 
-wintoggle(w, 3 [maximized], 0 [false]) 
+
+wintoggle(w, 3 [maximized], 0 [false])
+
 will hide the window
 
-			active				inactive
+active				inactive
 normal		SW_SHOWNORMAL		SW_SHOWNOACTIVATE
 current		SW_SHOW				SW_SHOWNA
 minimized	SW_SHOWMINIMIZED	SW_SHOWMINNOACTIVE
 maximized	SW_MAXIMIZE			SW_HIDE
 
-please refer to ShowWindow() msdn documentation to get meaning of constants
+you can look up ShowWindow on msdn to get meaning of constants
 */
 void wintoggle(Window* w, int mode, int focus) 
 {
-	static const int _wintoggle[4][2] {
+	static const int _wintoggle[4][2] = {
 		{SW_SHOWNORMAL, SW_SHOWNOACTIVATE},
 		{SW_SHOW, SW_SHOWNA},
 		{SW_SHOWMINIMIZED, SW_SHOWMINNOACTIVE},
 		{SW_MAXIMIZE, SW_HIDE},
-	}
-	ShowWindow(w->hwnd, _togstates[mode][focus]);
+	};
+	ShowWindow(w->hwnd, _wintoggle[mode][focus]);
 }
 
 /* winminimize minimizes the window */
-void winminimize(Window* w) 
+void winminimize(Window* w)
 {
 	ShowWindow(w->hwnd, SW_MINIMIZE);
 }
@@ -69,9 +71,8 @@ void winrestore(Window* w)
 	ShowWindow(w->hwnd, SW_RESTORE);
 }
 
-/* winshow is the equivalent of wintoggle(w, 2, 1) */
+/* winshow is the equivalent of wintoggle(w, 2, 1) (show and focus on window) */
 void winshow(Window* w) 
 {
 	wintoggle(w, 2, 1);
 }
-
