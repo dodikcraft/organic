@@ -10,8 +10,8 @@ static void oncreate(Window* w)
 
 int oinit(HINSTANCE inst, wchar_t* args) 
 {
-	Window w = newwin(L"Organic test", Nil, &oncreate);
-	winstyle(&w, WS_OVERLAPPEDWINDOW);
-	winexstyle(&w, WS_EX_CLIENTEDGE);
-	winshow(&w);
+	Window* w = newwin(L"Organic test", Nil, &oncreate);
+	winstyle(w, WS_OVERLAPPEDWINDOW);
+	winexstyle(w, WS_EX_CLIENTEDGE);
+	winshow(w);
 }

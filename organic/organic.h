@@ -78,7 +78,7 @@ void winshow(Window* w);
 /* BASIC FUNCTIONS */
 
 /* Prototype-based windows */
-Window newwin(wchar_t* label, Window* parent, void (*oncreate)(Window* w));
+Window* newwin(wchar_t* label, Window* parent, void (*oncreate)(Window* w));
 Window winclone(Window* w);
 
 /* Messaging */

@@ -13,12 +13,12 @@ void odefcreate(Window* w)
 
 void odefclose(Window* w)
 {
-	return;
+	w->destroy(w);
 }
 
 void odefdestroy(Window* w) 
 {
-	return;
+	PostQuitMessage(0);
 }
 
 void odefpaint(Window* w, HDC dc, PAINTSTRUCT ps)

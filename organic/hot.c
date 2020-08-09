@@ -52,7 +52,7 @@ static Window* winset(HWND h, Window* w)
 		return winrm(k);
 
 again:
-	if (winmap[k] == Nil)
+	if (winmap[k] == Nil || winmap[k]->hwnd == h)
 		winmap[k] = w;
 	else {
 		k = (k + 1) % ORGANIC_WINMAPSIZ;
@@ -81,7 +81,9 @@ static Window* winget(HWND h)
 
 	while (w->hwnd != h) {
 		k = (k + 1) % ORGANIC_WINMAPSIZ;
-		w = winmap[k];
+		w = winmap[k]; /* it stops here trying to get hwnd of nil */
+		/* hence hwnd in original window is corrupted */
+		/* nevermind, i've sent an automatic variable */
 	}
 
 	return w;
@@ -90,29 +92,28 @@ static Window* winget(HWND h)
 /*this map won't^WWILL work in general, but for our purposes it will be enough*/
 
 /* newwin creates and initializes a new window */
-Window newwin(wchar_t* label, Window* parent, void (*oncreate)(Window* w))
+Window* newwin(wchar_t* label, Window* parent, void (*oncreate)(Window* w))
 {
-	Window w;
+	Window* w = mnew(Window);
 	HWND paren = Nil;
-	mzero(w);
 	
 	if (parent != Nil)
 		paren = parent->hwnd;
 
-	LiterallyEveryWndProc(Nil, WM_ORGANIC_NEWWIN, 0, (LPARAM) &w);
+	LiterallyEveryWndProc(Nil, WM_ORGANIC_NEWWIN, 0, (LPARAM) w);
 	LiterallyEveryWndProc(Nil, WM_ORGANIC_ONCREATESET, 0, (LPARAM) oncreate);
 	
-	w.close = &odefclose;
-	w.destroy = &odefdestroy;
-	w.paint = &odefpaint;
-	w.pass = &odefpass;
+	w->close = &odefclose;
+	w->destroy = &odefdestroy;
+	w->paint = &odefpaint;
+	w->pass = &odefpass;
 
-	w.flags.mdied = 0;
-	w.flags.mdichild = 0;
+	w->flags.mdied = 0;
+	w->flags.mdichild = 0;
 
-	w.mdihwnd = Nil;
+	w->mdihwnd = Nil;
 
-	w.hwnd = CreateWindowEx(0, L"Organic", label, 0, -1, -1, -1, -1,
+	w->hwnd = CreateWindowEx(0, L"Organic", label, 0, -1, -1, -1, -1,
 		paren, NULL, instance, NULL);
 
 	return w;
@@ -169,8 +170,8 @@ LRESULT CALLBACK LiterallyEveryWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 
 	case WM_DESTROY:
 		w->destroy(w);
-		PostQuitMessage(0);
 		winset(hwnd, Nil);
+		free(w);
 		return 0;
 
 	case WM_PAINT:
@@ -199,6 +200,8 @@ LRESULT CALLBACK LiterallyEveryWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 				else
 					return DefFrameProc(hwnd, w->mdihwnd, msg, wparam, lparam);
 			}
+			else
+				return DefWindowProc(hwnd, msg, wparam, lparam);
 		}
 	}
 }
