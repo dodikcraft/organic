@@ -18,9 +18,9 @@ static HINSTANCE instance;
 static Window* winmap[ORGANIC_WINMAPSIZ];
 static size_t mapcap; /* remaining capacity of winmap */
 
-static size_t maphash(size_t n) 
+static size_t maphash(HWND n) 
 {
-	return n % ORGANIC_WINMAPSIZ;
+	return ((size_t)n % ORGANIC_WINMAPSIZ);
 }
 
 static Window* winrm(size_t k) 
