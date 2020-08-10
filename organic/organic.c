@@ -23,13 +23,17 @@ Bool askyesno(wchar_t* label, wchar_t* message)
 /* winstyle sets window's style */
 unsigned long winstyle(Window* w, unsigned long style)
 {
-	return SetWindowLong(w->hwnd, GWL_STYLE, style);
+	unsigned long p = SetWindowLong(w->hwnd, GWL_STYLE, style);
+	SetWindowPos(w->hwnd, Nil, 0, 0, 0, 0, SWP_NOZORDER|SWP_NOMOVE|SWP_NOSIZE|SWP_FRAMECHANGED);
+	return p;
 }
 
 /* winexstyle sets window's extended style */
 unsigned long winexstyle(Window* w, unsigned long style)
 {
-	return SetWindowLong(w->hwnd, GWL_EXSTYLE, style);
+	unsigned long p = SetWindowLong(w->hwnd, GWL_EXSTYLE, style);
+	SetWindowPos(w->hwnd, Nil, 0, 0, 0, 0, SWP_NOZORDER|SWP_NOMOVE|SWP_NOSIZE|SWP_FRAMECHANGED);
+	return p;
 }
 
 /* wintoggle sets the window visibility

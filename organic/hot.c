@@ -18,6 +18,7 @@ static HINSTANCE instance;
 static Window* winmap[ORGANIC_WINMAPSIZ];
 static size_t mapcap; /* remaining capacity of winmap */
 
+
 static size_t maphash(HWND n) 
 {
 	return ((size_t)n % ORGANIC_WINMAPSIZ);
@@ -169,11 +170,9 @@ LRESULT CALLBACK LiterallyEveryWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 		{
 			int width = LOWORD(lparam);
 			int height = HIWORD(lparam);
-			SetWindowPos(w->hwnd, Nil, 0, 0, width, height, SWP_NOZORDER);
 			w->resize(w, width, height);
 		}
 		return 0;
-
 
 	case WM_CREATE:
 		oncreate(w);
