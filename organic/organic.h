@@ -56,6 +56,8 @@ struct orgwindow {
 	void (*destroy)(Window* w);
 	void (*paint)(Window* w, HDC dc, PAINTSTRUCT ps);
 	Bool (*pass)(Window* w, WinMessage msg, int* ret);
+	void (*move)(Window* w, int x, int y);
+	void (*resize)(Window* w, int h, int v);
 	struct {
 		unsigned mdied : 1;			/* enables next flag */
 		unsigned mdichild : 1;		/* if 0 -- use DefFrameProc, if 1 -- use DefMDIChildProc */
@@ -73,13 +75,14 @@ void wintoggle(Window* w, int mode, int focus);
 void winminimize(Window* w);
 void winrestore(Window* w);
 void winshow(Window* w);
+void winlabel(Window* w, wchar_t* label);
 
 
 /* BASIC FUNCTIONS */
 
 /* Prototype-based windows */
-Window* newwin(wchar_t* label, Window* parent, void (*oncreate)(Window* w));
-Window winclone(Window* w);
+Window* newwin(unsigned int id, Window* parent, void (*oncreate)(Window* w));
+Window* winclone(Window* w);
 
 /* Messaging */
 WinMessage giveenvelope();

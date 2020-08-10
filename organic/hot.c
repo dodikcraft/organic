@@ -81,52 +81,50 @@ static Window* winget(HWND h)
 
 	while (w->hwnd != h) {
 		k = (k + 1) % ORGANIC_WINMAPSIZ;
-		w = winmap[k]; /* it stops here trying to get hwnd of nil */
-		/* hence hwnd in original window is corrupted */
-		/* nevermind, i've sent an automatic variable */
+		w = winmap[k];
 	}
 
 	return w;
 }
 
-/*this map won't^WWILL work in general, but for our purposes it will be enough*/
-
 /* newwin creates and initializes a new window */
-Window* newwin(wchar_t* label, Window* parent, void (*oncreate)(Window* w))
+Window* newwin(unsigned int id, Window* parent, void (*oncreate)(Window* w))
 {
 	Window* w = mnew(Window);
 	HWND paren = Nil;
-	
+
 	if (parent != Nil)
 		paren = parent->hwnd;
 
 	LiterallyEveryWndProc(Nil, WM_ORGANIC_NEWWIN, 0, (LPARAM) w);
 	LiterallyEveryWndProc(Nil, WM_ORGANIC_ONCREATESET, 0, (LPARAM) oncreate);
-	
+
 	w->close = &odefclose;
 	w->destroy = &odefdestroy;
 	w->paint = &odefpaint;
 	w->pass = &odefpass;
+	w->resize = &odefresize;
+	w->move = &odefmove;
 
 	w->flags.mdied = 0;
 	w->flags.mdichild = 0;
 
 	w->mdihwnd = Nil;
 
-	w->hwnd = CreateWindowEx(0, L"Organic", label, 0, -1, -1, -1, -1,
-		paren, NULL, instance, NULL);
+	w->hwnd = CreateWindowEx(0, L"Organic", Nil, 0, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+		paren, (HMENU) id, instance, NULL);
 
 	return w;
 }
 
 /* winclone creates a new window from existing */
-Window winclone(Window* w)
+Window* winclone(Window* w)
 {
 	wchar_t buf[512];
-	Window v;
-	memcpy(&v, w, sizeof(Window));
+	Window* v = mnew(Window);
+	memcpy(v, w, sizeof(Window));
 	GetWindowText(w->hwnd, buf, 512);
-	v.hwnd = CreateWindowEx(0, L"Organic", buf, 0, -1, -1, -1, -1,
+	v->hwnd = CreateWindowEx(0, L"Organic", buf, 0, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 		GetParent(w->hwnd), NULL, instance, NULL);
 	return v;
 }
@@ -137,7 +135,7 @@ LRESULT CALLBACK LiterallyEveryWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 	static Bool addnexthwnd;
 	static Window* w;
 	static void (*oncreate)(Window*);
-	
+
 	if (msg == WM_ORGANIC_NEWWIN) {
 		w = (Window*) lparam;
 		addnexthwnd = 1;
@@ -159,8 +157,25 @@ LRESULT CALLBACK LiterallyEveryWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 
 	switch (msg)
 	{
+	case WM_MOVE:
+		{
+			int x0 = LOWORD(lparam);
+			int y0 = HIWORD(lparam);
+			w->move(w, x0, y0);
+		}
+		return 0;
+
+	case WM_SIZE:
+		{
+			int width = LOWORD(lparam);
+			int height = HIWORD(lparam);
+			SetWindowPos(w->hwnd, Nil, 0, 0, width, height, SWP_NOZORDER);
+			w->resize(w, width, height);
+		}
+		return 0;
+
+
 	case WM_CREATE:
-		w = winset(hwnd, w);
 		oncreate(w);
 		return 0;
 

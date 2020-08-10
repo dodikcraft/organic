@@ -48,7 +48,7 @@ maximized	SW_MAXIMIZE			SW_HIDE
 
 you can look up ShowWindow on msdn to get meaning of constants
 */
-void wintoggle(Window* w, int mode, Bool unfocus) 
+void wintoggle(Window* w, int mode, Bool focus) 
 {
 	static const int _wintoggle[4][2] = {
 		{SW_SHOWNORMAL, SW_SHOWNOACTIVATE},
@@ -56,7 +56,7 @@ void wintoggle(Window* w, int mode, Bool unfocus)
 		{SW_SHOWMINIMIZED, SW_SHOWMINNOACTIVE},
 		{SW_MAXIMIZE, SW_HIDE},
 	};
-	ShowWindow(w->hwnd, _wintoggle[mode][mbool(unfocus)]);
+	ShowWindow(w->hwnd, _wintoggle[mode][mbool(!focus)]);
 }
 
 /* winminimize minimizes the window */
@@ -71,8 +71,14 @@ void winrestore(Window* w)
 	ShowWindow(w->hwnd, SW_RESTORE);
 }
 
-/* winshow is the equivalent of wintoggle(w, 0, 0) (show and focus on window) */
+/* winshow is equivalent of wintoggle(w, 0, 1) (show and focus on window) */
 void winshow(Window* w) 
 {
-	wintoggle(w, 0, 0);
+	wintoggle(w, 0, 1);
+}
+
+/* winlabel sets window label */
+void winlabel(Window* w, wchar_t* label)
+{
+	SetWindowText(w->hwnd, label);
 }

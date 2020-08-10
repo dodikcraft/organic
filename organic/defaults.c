@@ -30,3 +30,13 @@ Bool odefpass(Window* w, WinMessage msg, int* ret)
 {
 	return 0;	
 }
+
+void odefmove(Window* w, int x, int y)
+{
+	return;
+}
+
+void odefresize(Window* w, int h, int v)
+{
+	return;
+}
