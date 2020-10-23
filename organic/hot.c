@@ -14,10 +14,7 @@ LRESULT CALLBACK LiterallyEveryWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 static WNDCLASSEX defclass;
 static HINSTANCE instance;
 
-
 static Window* winmap[ORGANIC_WINMAPSIZ];
-static size_t mapcap; /* remaining capacity of winmap */
-
 
 static size_t maphash(HWND n) 
 {
@@ -41,11 +38,6 @@ static Window* winset(HWND h, Window* w)
 {
 	size_t k;
 
-#ifdef ORGANIC_FOOLPROOF
-	if (mapcap >= ORGANIC_WINMAPSIZ)
-		return Nil;
-#endif
-
 	k = maphash(h);
 
 	/* awful, i know */
@@ -59,13 +51,6 @@ again:
 		k = (k + 1) % ORGANIC_WINMAPSIZ;
 		goto again;
 	}
-
-#ifdef ORGANIC_FOOLPROOF
-	if (w == Nil)
-		mapcap--;
-	else
-		mapcap++;
-#endif
 
 	return w;
 }
